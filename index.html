@@ -279,8 +279,8 @@
                         <i data-lucide="scan-search" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h2 class="font-bold text-base">Mod List Conflict Checker</h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Paste your mod list or `.jar` filenames to scan for known clashes</p>
+                        <h2 class="font-bold text-base">Mod List Conflict & Dependency Checker</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Paste your mod list or upload your `.jar` folder to scan for clashes and missing dependencies</p>
                     </div>
                 </div>
                 <button class="close-modal p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
@@ -331,13 +331,22 @@
 
                 <button id="runScanBtn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
                     <i data-lucide="cpu" class="w-4 h-4"></i>
-                    Scan Mod List for Conflicts
+                    Scan for Conflicts & Missing Dependencies
                 </button>
 
                 <!-- Scan Results Output -->
-                <div id="scanResultsContainer" class="hidden space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
-                    <h3 id="scanResultsHeader" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Scan Results</h3>
-                    <div id="scanResultsList" class="space-y-3"></div>
+                <div id="scanResultsContainer" class="hidden space-y-4 pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <!-- Missing Dependencies Section -->
+                    <div id="dependencyResultsSection" class="space-y-2.5">
+                        <h3 id="dependencyResultsHeader" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Dependency Check</h3>
+                        <div id="dependencyResultsList" class="space-y-2.5"></div>
+                    </div>
+
+                    <!-- Mod Conflicts Section -->
+                    <div class="space-y-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800/70">
+                        <h3 id="scanResultsHeader" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conflict Check</h3>
+                        <div id="scanResultsList" class="space-y-3"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -906,12 +915,74 @@
             modListInput.value = [
                 'create-1.21.1-6.0.4.jar',
                 'create_aeronautics-1.3.0.jar',
-                'sable-1.21.1-neoforge.jar',
                 'jei-1.21.1-neoforge-19.21.0.247.jar',
                 'sodium-neoforge-0.6.13+mc1.21.1.jar',
                 'iris-neoforge-1.8.8+mc1.21.1.jar'
             ].join('\n');
         });
+
+        // Required Dependency Rules for Common Mods & Addons
+        const dependencyRules = [
+            {
+                modName: 'Create Aeronautics',
+                triggers: ['aeronautics'],
+                requires: [
+                    { name: 'Sable', tokens: ['sable'], note: 'Required physics & sub-level engine for Create Aeronautics.' },
+                    { name: 'Create', tokens: ['create-1.', 'create_1.', 'create-mc', 'create-neoforge', 'create-forge', 'create-fabric', 'create '], note: 'Base Create mod is required.' }
+                ]
+            },
+            {
+                modName: 'Create: Northstar / Northstar Redux',
+                triggers: ['northstar'],
+                requires: [
+                    { name: 'Create', tokens: ['create-1.', 'create_1.', 'create-mc', 'create-neoforge', 'create-forge', 'create-fabric', 'create '], note: 'Base Create mod is required (use Northstar Redux for Create 6.0+).' }
+                ]
+            },
+            {
+                modName: 'Create Addon (Steam n Rails / Crafts & Additions / Enchantment Industry)',
+                triggers: ['steam_n_rails', 'railways', 'createaddition', 'enchantment_industry', 'sliceanddice', 'create_interactive', 'clockwork'],
+                requires: [
+                    { name: 'Create', tokens: ['create-1.', 'create_1.', 'create-mc', 'create-neoforge', 'create-forge', 'create-fabric', 'create '], note: 'Base Create mod must be installed alongside Create addons.' }
+                ]
+            },
+            {
+                modName: 'Valkyrien Skies 2 Addons (Eureka / Clockwork / Trackwork)',
+                triggers: ['eureka', 'clockwork', 'trackwork'],
+                requires: [
+                    { name: 'Valkyrien Skies 2', tokens: ['valkyrienskies', 'valkyrien_skies', 'valkyrien-skies'], note: 'Core physics library required for VS2 addons.' },
+                    { name: 'Kotlin for Forge / Fabric Language Kotlin', tokens: ['kotlin'], note: 'Valkyrien Skies 2 requires the Kotlin language adapter.' }
+                ]
+            },
+            {
+                modName: 'Iris / Oculus Shaders',
+                triggers: ['iris', 'oculus'],
+                requires: [
+                    { name: 'Sodium / Embeddium', tokens: ['sodium', 'embeddium', 'rubidium'], note: 'Iris requires Sodium (Fabric/NeoForge) and Oculus requires Embeddium (Forge).' }
+                ]
+            },
+            {
+                modName: 'Botania',
+                triggers: ['botania'],
+                requires: [
+                    { name: 'Patchouli', tokens: ['patchouli'], note: 'Required for the Lexica Botania in-game guide.' },
+                    { name: 'Curios API / Trinkets', tokens: ['curios', 'trinkets'], note: 'Required for bauble/ring equipment slots.' }
+                ]
+            },
+            {
+                modName: 'Architectury-dependent Mods (REI / KubeJS / FTB Mods)',
+                triggers: ['roughlyenoughitems', 'rei-', 'kubejs', 'ftb-chunks', 'ftbchunks', 'ftb-quests', 'ftbquests'],
+                requires: [
+                    { name: 'Architectury API', tokens: ['architectury'], note: 'Cross-loader API required by KubeJS, REI, and FTB suite mods.' }
+                ]
+            },
+            {
+                modName: 'Fabric Mods Detected',
+                triggers: ['-fabric', '+fabric', '_fabric'],
+                requires: [
+                    { name: 'Fabric API', tokens: ['fabric-api', 'fabric_api', 'fabric api'], note: 'Almost all Fabric mods require Fabric API to launch.' }
+                ]
+            }
+        ];
 
         // Process Uploaded Folder or .jar Files Locally
         function handleModFilesSelection(fileList) {
@@ -963,21 +1034,87 @@
             }
         });
 
-        // Run Mod List Scan
+        // Run Mod List Scan (Dependencies + Conflicts)
         runScanBtn.addEventListener('click', () => {
             const rawText = modListInput.value.toLowerCase();
             if (!rawText.trim()) {
-                showToast('Please paste at least two mods to scan.');
+                showToast('Please paste or upload at least one mod to scan.');
                 return;
             }
 
-            // Match conflicts where at least two distinct mod tokens appear in the user's list
+            // Normalize lines so standalone "create" entries also match cleanly
+            const modLines = rawText.split(/[\n,]+/).map(l => l.trim()).filter(Boolean);
+            const hasBaseCreate = modLines.some(line =>
+                line === 'create' ||
+                /^create[-_+.\s]/.test(line) &&
+                !line.includes('aeronautics') &&
+                !line.includes('northstar') &&
+                !line.includes('interactive') &&
+                !line.includes('addition')
+            );
+
+            // 1. Check Missing Dependencies
+            const missingDependencies = [];
+            dependencyRules.forEach(rule => {
+                const isTriggered = rule.triggers.some(t => rawText.includes(t));
+                if (!isTriggered) return;
+
+                rule.requires.forEach(req => {
+                    const isSatisfied = req.name === 'Create'
+                        ? hasBaseCreate
+                        : req.tokens.some(token => rawText.includes(token));
+
+                    if (!isSatisfied) {
+                        // Avoid duplicate missing dependency entries
+                        const alreadyListed = missingDependencies.some(
+                            m => m.missing === req.name && m.neededBy === rule.modName
+                        );
+                        if (!alreadyListed) {
+                            missingDependencies.push({
+                                neededBy: rule.modName,
+                                missing: req.name,
+                                note: req.note
+                            });
+                        }
+                    }
+                });
+            });
+
+            const dependencyResultsHeader = document.getElementById('dependencyResultsHeader');
+            const dependencyResultsList = document.getElementById('dependencyResultsList');
+
+            if (missingDependencies.length === 0) {
+                dependencyResultsHeader.textContent = 'Dependency Check: All Core Dependencies Present';
+                dependencyResultsList.innerHTML = `
+                    <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2.5">
+                        <i data-lucide="package-check" class="w-4 h-4 shrink-0"></i>
+                        <span>No missing core library or addon dependencies detected for your listed mods.</span>
+                    </div>
+                `;
+            } else {
+                dependencyResultsHeader.textContent = `Missing Dependencies (${missingDependencies.length} Required)`;
+                dependencyResultsList.innerHTML = missingDependencies.map(dep => `
+                    <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-bold text-xs text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                                <i data-lucide="package-x" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                                Missing: ${dep.missing}
+                            </span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/20 text-amber-800 dark:text-amber-300">
+                                Required by ${dep.neededBy}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-700 dark:text-slate-300">${dep.note}</p>
+                    </div>
+                `).join('');
+            }
+
+            // 2. Match Conflicts where at least two distinct mod tokens appear in the user's list
             const matchedConflicts = conflicts.filter(conflict => {
                 const modATokens = conflict.modA.toLowerCase().split(/[\s+()/-]+/).filter(w => w.length > 3 && w !== 'create');
                 const modBTokens = conflict.modB.toLowerCase().split(/[\s+()/-]+/).filter(w => w.length > 2 && w !== 'create');
 
-                const hasCreate = rawText.includes('create');
-                const matchA = modATokens.some(token => rawText.includes(token)) || (conflict.modA.toLowerCase().includes('create') && hasCreate && modATokens.length === 0);
+                const matchA = modATokens.some(token => rawText.includes(token)) || (conflict.modA.toLowerCase().includes('create') && hasBaseCreate && modATokens.length === 0);
                 const matchB = modBTokens.some(token => rawText.includes(token));
 
                 return matchA && matchB;
@@ -986,15 +1123,15 @@
             scanResultsContainer.classList.remove('hidden');
 
             if (matchedConflicts.length === 0) {
-                scanResultsHeader.textContent = '0 Known Conflicts Detected';
+                scanResultsHeader.textContent = 'Conflict Check: 0 Known Conflicts Detected';
                 scanResultsList.innerHTML = `
                     <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-3">
                         <i data-lucide="shield-check" class="w-5 h-5 shrink-0"></i>
-                        <span>No known direct conflicts matched your pasted mod list! Make sure all mod versions target the same Minecraft & loader version.</span>
+                        <span>No known direct conflicts matched your mod list! Make sure all mod versions target the same Minecraft & loader version.</span>
                     </div>
                 `;
             } else {
-                scanResultsHeader.textContent = `${matchedConflicts.length} Potential Interaction${matchedConflicts.length > 1 ? 's' : ''} Found`;
+                scanResultsHeader.textContent = `Conflict Check: ${matchedConflicts.length} Potential Interaction${matchedConflicts.length > 1 ? 's' : ''} Found`;
                 scanResultsList.innerHTML = matchedConflicts.map(c => {
                     const badge = getSeverityBadge(c.severity);
                     return `
