@@ -289,6 +289,33 @@
             </div>
 
             <div class="p-6 space-y-4 overflow-y-auto">
+                <!-- Folder / JAR Upload Dropzone -->
+                <div id="folderDropZone" class="rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500 bg-slate-50/70 dark:bg-slate-950/60 p-4 text-center transition-colors">
+                    <input type="file" id="modsFolderInput" webkitdirectory directory multiple class="hidden">
+                    <input type="file" id="modsFilesInput" accept=".jar,.zip,.disabled" multiple class="hidden">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
+                                <i data-lucide="folder-up" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-slate-800 dark:text-slate-200">Select your Minecraft <code class="font-mono text-[11px] px-1 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800">mods/</code> folder</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Reads filenames locally in your browser—no files are uploaded to a server.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+                            <button type="button" id="uploadFolderBtn" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 transition-opacity">
+                                <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
+                                Upload Folder
+                            </button>
+                            <button type="button" id="uploadFilesBtn" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                <i data-lucide="file-archive" class="w-3.5 h-3.5"></i>
+                                Select .jar Files
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <label for="modListInput" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Installed Mods (one per line or comma-separated)</label>
@@ -583,6 +610,11 @@
         const scanResultsContainer = document.getElementById('scanResultsContainer');
         const scanResultsHeader = document.getElementById('scanResultsHeader');
         const scanResultsList = document.getElementById('scanResultsList');
+        const modsFolderInput = document.getElementById('modsFolderInput');
+        const modsFilesInput = document.getElementById('modsFilesInput');
+        const uploadFolderBtn = document.getElementById('uploadFolderBtn');
+        const uploadFilesBtn = document.getElementById('uploadFilesBtn');
+        const folderDropZone = document.getElementById('folderDropZone');
 
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
@@ -879,6 +911,56 @@
                 'sodium-neoforge-0.6.13+mc1.21.1.jar',
                 'iris-neoforge-1.8.8+mc1.21.1.jar'
             ].join('\n');
+        });
+
+        // Process Uploaded Folder or .jar Files Locally
+        function handleModFilesSelection(fileList) {
+            const files = Array.from(fileList || []);
+            if (files.length === 0) return;
+
+            // Filter for mod archives (.jar / .zip / .disabled) or fallback to all filenames if none match
+            const modFiles = files.filter(f => /\.(jar|zip|disabled)$/i.test(f.name));
+            const targetFiles = modFiles.length > 0 ? modFiles : files;
+
+            const uniqueNames = [...new Set(targetFiles.map(f => f.name))].sort((a, b) => a.localeCompare(b));
+            modListInput.value = uniqueNames.join('\n');
+
+            showToast(`Loaded ${uniqueNames.length} mod file${uniqueNames.length === 1 ? '' : 's'} from folder!`);
+            runScanBtn.click();
+        }
+
+        uploadFolderBtn.addEventListener('click', () => modsFolderInput.click());
+        uploadFilesBtn.addEventListener('click', () => modsFilesInput.click());
+
+        modsFolderInput.addEventListener('change', (e) => {
+            handleModFilesSelection(e.target.files);
+            e.target.value = '';
+        });
+
+        modsFilesInput.addEventListener('change', (e) => {
+            handleModFilesSelection(e.target.files);
+            e.target.value = '';
+        });
+
+        // Support Drag & Drop of .jar files onto the dropzone
+        ['dragenter', 'dragover'].forEach(eventName => {
+            folderDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                folderDropZone.classList.add('border-indigo-500', 'bg-indigo-500/5');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            folderDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                folderDropZone.classList.remove('border-indigo-500', 'bg-indigo-500/5');
+            });
+        });
+
+        folderDropZone.addEventListener('drop', (e) => {
+            if (e.dataTransfer && e.dataTransfer.files) {
+                handleModFilesSelection(e.dataTransfer.files);
+            }
         });
 
         // Run Mod List Scan
