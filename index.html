@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModClash | Minecraft Mod Compatibility & Conflict Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e32',
+                            950: '#090d16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for sleek dark/light UI */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
+        }
+        .glass-card {
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased transition-colors duration-200 selection:bg-emerald-500/30 selection:text-emerald-400">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/80 dark:bg-slate-950/80 glass-card">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                    <i data-lucide="blocks" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-lg tracking-tight">ModClash</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">1.20.1 / 1.21.1</span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Inter-Mod Conflict & Compatibility Tracker</p>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button id="openAnalyzerBtn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium shadow-md shadow-indigo-500/20 transition-all active:scale-95">
+                    <i data-lucide="scan-search" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Check Mod List</span>
+                    <span class="sm:hidden">Check</span>
+                </button>
+
+                <button id="openReportBtn" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium shadow-md shadow-emerald-500/20 transition-all active:scale-95">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Log Conflict</span>
+                    <span class="sm:hidden">Add</span>
+                </button>
+
+                <button id="themeToggle" aria-label="Toggle theme" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-900 hover:bg-slate-200/70 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Hero & Summary Dashboard -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <!-- Hero Intro Card -->
+            <div class="lg:col-span-7 rounded-2xl p-6 sm:p-8 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-850 text-white border border-slate-800 shadow-xl relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-12 -top-12 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-12 -bottom-12 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 space-y-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-300 text-xs font-medium border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Community Modpack Diagnostics
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                        Stop Hunting Crash Logs.<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Know Which Mods Clash & How to Fix Them.</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base max-w-2xl leading-relaxed">
+                        Browse verified mixin collisions, rendering incompatibilities, and version-specific workarounds across Create addons, performance mods, shaders, and recipe viewers.
+                    </p>
+                </div>
+
+                <!-- Quick Search Input inside Hero -->
+                <div class="relative z-10 mt-6">
+                    <div class="relative flex items-center">
+                        <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-4 pointer-events-none"></i>
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Search by mod name, error, or symptom (e.g., 'Sable', 'JEI', 'Sodium', 'Mixin', 'Northstar')..."
+                            class="w-full pl-12 pr-24 py-3.5 rounded-xl bg-slate-950/90 border border-slate-700/80 text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                        >
+                        <button id="clearSearchBtn" class="hidden absolute right-3 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-medium transition-colors">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Stats Grid -->
+            <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+                <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Tracked</span>
+                        <div class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            <i data-lucide="database" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="statTotal" class="text-3xl font-extrabold tracking-tight">0</div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Documented mod interactions</p>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-rose-500">Hard Crashes</span>
+                        <div class="p-2 rounded-lg bg-rose-500/10 text-rose-500">
+                            <i data-lucide="flame" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="statCritical" class="text-3xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">0</div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Startup or world-load crashes</p>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-500">Visual / Glitches</span>
+                        <div class="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="statWarning" class="text-3xl font-extrabold tracking-tight text-amber-600 dark:text-amber-400">0</div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Broken rendering or missing UI</p>
+                    </div>
+                </div>
+
+                <div class="rounded-2xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-emerald-500">Patched / Safe</span>
+                        <div class="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div id="statPatched" class="text-3xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">0</div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Fixed via updates or config</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Bar & Category Tabs -->
+        <section class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+            <!-- Category Filter Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar" id="categoryFilters">
+                <button data-category="all" class="filter-pill active px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-sm">
+                    All Categories
+                </button>
+                <button data-category="Create & Physics" class="filter-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700">
+                    Create & Physics
+                </button>
+                <button data-category="Rendering & Shaders" class="filter-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700">
+                    Rendering & Shaders
+                </button>
+                <button data-category="Recipe Viewers & UI" class="filter-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700">
+                    Recipe Viewers & UI
+                </button>
+                <button data-category="Performance & Core" class="filter-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700">
+                    Performance & Core
+                </button>
+            </div>
+
+            <!-- Severity & Loader Dropdowns -->
+            <div class="flex items-center gap-2.5 shrink-0">
+                <select id="severityFilter" aria-label="Filter by severity" class="px-3 py-2 rounded-xl text-xs font-medium bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="all">Severity: All</option>
+                    <option value="critical">Critical (Crash)</option>
+                    <option value="major">Major (Broken Feature)</option>
+                    <option value="minor">Minor / Visual</option>
+                    <option value="resolved">Patched / Version-Specific</option>
+                </select>
+
+                <select id="loaderFilter" aria-label="Filter by mod loader" class="px-3 py-2 rounded-xl text-xs font-medium bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="all">Loader: All</option>
+                    <option value="NeoForge">NeoForge</option>
+                    <option value="Forge">Forge</option>
+                    <option value="Fabric">Fabric</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Active Filter Feedback Banner -->
+        <div id="resultsSummary" class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span id="showingCountText">Showing all conflicts</span>
+            <button id="resetAllFiltersBtn" class="hidden text-emerald-600 dark:text-emerald-400 hover:underline font-medium">Reset all filters</button>
+        </div>
+
+        <!-- Conflicts Grid -->
+        <section id="conflictsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Cards injected via JavaScript -->
+        </section>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center space-y-4">
+            <div class="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 text-slate-400 mx-auto flex items-center justify-center">
+                <i data-lucide="search-x" class="w-7 h-7"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-base font-bold">No matching mod conflicts found</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                    Try clearing your search terms or filters, or log a new conflict if you've discovered an undocumented incompatibility.
+                </p>
+            </div>
+            <button id="emptyResetBtn" class="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-xs font-semibold hover:opacity-90 transition-opacity">
+                Reset Filters
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-slate-800/80 py-6 mt-12 bg-white/50 dark:bg-slate-950/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2">
+                <i data-lucide="blocks" class="w-4 h-4 text-emerald-500"></i>
+                <span><strong class="text-slate-700 dark:text-slate-200">ModClash</strong> — Curated Minecraft Mod Compatibility Database</span>
+            </div>
+            <p>Always back up your <code class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-800">saves/</code> folder before updating core physics or rendering mods.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: Mod List Compatibility Analyzer -->
+    <div id="analyzerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 rounded-xl bg-indigo-500/10 text-indigo-500">
+                        <i data-lucide="scan-search" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base">Mod List Conflict Checker</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Paste your mod list or `.jar` filenames to scan for known clashes</p>
+                    </div>
+                </div>
+                <button class="close-modal p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="modListInput" class="text-xs font-semibold text-slate-700 dark:text-slate-300">Installed Mods (one per line or comma-separated)</label>
+                        <button id="loadSampleModsBtn" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Load Sample Aeronautics Pack</button>
+                    </div>
+                    <textarea
+                        id="modListInput"
+                        rows="5"
+                        placeholder="create-1.21.1-6.0.4.jar&#10;create_aeronautics-1.3.0.jar&#10;sable-1.21.1.jar&#10;jei-1.21.1-neoforge.jar&#10;sodium-neoforge-0.6.13.jar"
+                        class="w-full p-3.5 rounded-xl font-mono text-xs bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-200"
+                    ></textarea>
+                </div>
+
+                <button id="runScanBtn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    Scan Mod List for Conflicts
+                </button>
+
+                <!-- Scan Results Output -->
+                <div id="scanResultsContainer" class="hidden space-y-3 pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <h3 id="scanResultsHeader" class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Scan Results</h3>
+                    <div id="scanResultsList" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Log New Mod Conflict -->
+    <div id="reportModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+                        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base">Log a Mod Conflict</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Add a newly discovered incompatibility to your current session</p>
+                    </div>
+                </div>
+                <button class="close-modal p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="newConflictForm" class="p-6 space-y-4 overflow-y-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Mod A *</label>
+                        <input type="text" id="formModA" required placeholder="e.g., Create Aeronautics" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Mod B *</label>
+                        <input type="text" id="formModB" required placeholder="e.g., JEI" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Severity</label>
+                        <select id="formSeverity" class="w-full px-3 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="critical">Critical (Crash)</option>
+                            <option value="major">Major (Broken)</option>
+                            <option value="minor">Minor / Visual</option>
+                            <option value="resolved">Patched</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Category</label>
+                        <select id="formCategory" class="w-full px-3 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="Create & Physics">Create & Physics</option>
+                            <option value="Rendering & Shaders">Rendering & Shaders</option>
+                            <option value="Recipe Viewers & UI">Recipe Viewers & UI</option>
+                            <option value="Performance & Core">Performance & Core</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">Mod Loader</label>
+                        <select id="formLoader" class="w-full px-3 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="NeoForge">NeoForge</option>
+                            <option value="Forge">Forge</option>
+                            <option value="Fabric">Fabric</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">MC / Mod Versions Affected *</label>
+                    <input type="text" id="formVersions" required placeholder="e.g., MC 1.21.1 | Aeronautics 1.3.0 + JEI 19.x" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">What Happens (Symptoms & Cause) *</label>
+                    <textarea id="formSummary" required rows="2" placeholder="Describe the crash, mixin error, or visual glitch..." class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Verified Fix / Workaround *</label>
+                    <textarea id="formFix" required rows="2" placeholder="How can players resolve or bypass this issue?" class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end gap-3">
+                    <button type="button" class="close-modal px-4 py-2.5 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/20">Add to Database</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner (No alert() used) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-xs font-semibold shadow-xl border border-slate-700 dark:border-slate-200">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 dark:text-emerald-600"></i>
+            <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CURATED MOD CONFLICT DATASET
+        // ==========================================
+        const initialConflicts = [
+            {
+                id: 'aero-sable-jei',
+                modA: 'Create Aeronautics + Sable',
+                modB: 'JEI (Just Enough Items)',
+                severity: 'resolved',
+                category: 'Recipe Viewers & UI',
+                loader: 'NeoForge',
+                versions: 'MC 1.21.1 | Aeronautics 1.3.0 (Patched in 1.3.2+)',
+                errorTag: 'Mixin / Creative Tab World-Load Crash',
+                summary: 'In Create Aeronautics 1.3.0, the bundled Create Simulated physics core conflicts with JEI’s creative-tab and recipe registration when Sable initializes physics sub-levels on world join, causing an immediate client crash.',
+                fix: 'Update Create Aeronautics to 1.3.2 or newer (which includes the official Simulated/JEI mixin patch). If locked to 1.3.0, remove JEI and replace it with EMI.',
+                keywords: ['create aeronautics', 'sable', 'jei', 'just enough items', 'simulated', 'emi', 'crash']
+            },
+            {
+                id: 'sable-sodium-08',
+                modA: 'Sable (Create Aeronautics)',
+                modB: 'Sodium 0.8+ Alpha',
+                severity: 'critical',
+                category: 'Rendering & Shaders',
+                loader: 'NeoForge',
+                versions: 'MC 1.21.1 | Sodium 0.6.13 works; 0.8+ breaks',
+                errorTag: 'Sub-Level Chunk Renderer Crash',
+                summary: 'Sodium 0.8 alpha builds overhaul chunk section rendering in ways that break Sable’s off-world physics sub-level rendering, resulting in invisible airships or immediate rendering crashes.',
+                fix: 'Stick to Sodium 0.6.x (such as 0.6.13), which runs smoothly alongside Sable and Create Aeronautics without breaking contraption sub-levels.',
+                keywords: ['sable', 'sodium', 'create aeronautics', 'render', 'invisible', '0.6.13', '0.8']
+            },
+            {
+                id: 'create6-addons',
+                modA: 'Create 6.0+ (Post-Production Update)',
+                modB: 'Unupdated Create Addons (Northstar / Steam n Rails)',
+                severity: 'critical',
+                category: 'Create & Physics',
+                loader: 'NeoForge',
+                versions: 'MC 1.20.1 & 1.21.1 | Create 6.0.0+',
+                errorTag: 'NoClassDefFoundError / Flywheel 1.0 API Break',
+                summary: 'Create 6.0 refactored internal logistics, ponder registries, and upgraded to Flywheel 1.0. Older addons built for Create 0.5.1 (such as original Create: Northstar) crash on startup until migrated to their Redux/6.0 ports.',
+                fix: 'Use Create 6.0-compatible ports such as "Create: Northstar - Redux" or verify every Create addon explicitly lists Create 6.0+ support.',
+                keywords: ['create', 'northstar', 'redux', 'flywheel', '6.0', 'steam', 'rails', 'startup']
+            },
+            {
+                id: 'optifine-create-flywheel',
+                modA: 'OptiFine',
+                modB: 'Create / Flywheel & Sodium',
+                severity: 'critical',
+                category: 'Rendering & Shaders',
+                loader: 'Forge',
+                versions: 'All Modern Versions (1.18.2 – 1.21.1)',
+                errorTag: 'Closed-Source Rendering Injection Clash',
+                summary: 'OptiFine aggressively overwrites Minecraft’s rendering pipeline, breaking Flywheel’s instanced contraption rendering (causing invisible rotating gears, trains, and crashes) and colliding with virtually all modern Forge/NeoForge mods.',
+                fix: 'Completely remove OptiFine. Use Embeddium / Sodium for FPS performance and Oculus / Iris + Colorwheel for shaders with Create contraptions.',
+                keywords: ['optifine', 'flywheel', 'create', 'embeddium', 'oculus', 'iris', 'invisible', 'shaders']
+            },
+            {
+                id: 'iris-oculus-flywheel',
+                modA: 'Iris / Oculus Shaders',
+                modB: 'Create (Flywheel Instancing)',
+                severity: 'minor',
+                category: 'Rendering & Shaders',
+                loader: 'NeoForge',
+                versions: 'MC 1.20.1 & 1.21.1',
+                errorTag: 'Broken Shadows / Disappearing Contraptions',
+                summary: 'When shaders are enabled, Flywheel’s GPU instancing backend disables or renders Create contraptions without shader lighting/shadows unless a compatibility bridge is present.',
+                fix: 'Install the "Colorwheel" (or Iris Flywheel Compat) addon, or run `/flywheel backend off` in-game if contraptions turn invisible under a shaderpack.',
+                keywords: ['iris', 'oculus', 'shaders', 'flywheel', 'create', 'colorwheel', 'shadows']
+            },
+            {
+                id: 'vs2-create-interactive',
+                modA: 'Valkyrien Skies 2 + Eureka',
+                modB: 'Create: Interactive',
+                severity: 'major',
+                category: 'Create & Physics',
+                loader: 'Forge',
+                versions: 'MC 1.20.1 | Create 0.5.1.f–j',
+                errorTag: 'Contraption Physics Desync & Duplication',
+                summary: 'Create: Interactive converts all Create contraptions into physics-enabled VS2 sub-grids. Pairing it with specific versions of Create or Trackwork can cause trains to derail violently, duplicate blocks, or corrupt chunk entities.',
+                fix: 'Match exact pinned versions of Valkyrien Skies 2, Kotlin for Forge, and Create: Interactive, or disable interactive contraptions on standard rail trains via config.',
+                keywords: ['valkyrien skies', 'vs2', 'create interactive', 'eureka', 'clockwork', 'train', 'physics']
+            },
+            {
+                id: 'emi-jei-recipe-tabs',
+                modA: 'EMI',
+                modB: 'Create Addons (Without JEI Installed)',
+                severity: 'minor',
+                category: 'Recipe Viewers & UI',
+                loader: 'NeoForge',
+                versions: 'MC 1.20.1 & 1.21.1',
+                errorTag: 'Missing Custom Machine Recipe Categories',
+                summary: 'Many Create addons only register custom machine recipe tabs (such as atmospheric condensers or specialized presses) through the JEI API rather than native EMI plugins, leaving recipes blank in EMI alone.',
+                fix: 'Install JEI alongside EMI (EMI automatically reads JEI recipe plugins). Note: Only avoid JEI if running an unpatched Create Aeronautics 1.3.0 + Sable build.',
+                keywords: ['emi', 'jei', 'recipes', 'missing', 'create', 'northstar', 'tabs']
+            },
+            {
+                id: 'lithium-canary-create',
+                modA: 'Canary / Radium / Lithium',
+                modB: 'Create & Immersive Portals',
+                severity: 'major',
+                category: 'Performance & Core',
+                loader: 'Fabric',
+                versions: 'MC 1.20.1 & 1.21.1',
+                errorTag: 'Entity Collision & Redstone Tick Optimization Clash',
+                summary: 'Aggressive tick and entity-collision optimizations in Lithium/Canary ports can alter how Create mechanical arms, belts, or cross-dimensional portal entities calculate hitboxes and movement.',
+                fix: 'Keep Lithium/Radium updated to latest releases, or disable specific entity collision mixins in `lithium.properties` if belt items stall.',
+                keywords: ['lithium', 'canary', 'radium', 'create', 'fabric', 'belts', 'tick', 'lag']
+            },
+            {
+                id: 'modernfix-dynamic-resources',
+                modA: 'ModernFix (Dynamic Resources)',
+                modB: 'Custom Model / Ponder Mods',
+                severity: 'minor',
+                category: 'Performance & Core',
+                loader: 'NeoForge',
+                versions: 'MC 1.20.1 & 1.21.1',
+                errorTag: 'Missing / Purple-Black Textures on First Load',
+                summary: 'Enabling `mixin.perf.dynamic_resources=true` in ModernFix saves massive amounts of RAM, but can cause custom dynamic block models or Ponder scenes to render with missing textures briefly.',
+                fix: 'Update ModernFix to the latest version (which includes specific Create/Flywheel compatibility rules) or toggle dynamic resources off in `modernfix-mixins.properties`.',
+                keywords: ['modernfix', 'ferritecore', 'textures', 'ram', 'memory', 'ponder', 'missing']
+            },
+            {
+                id: 'cc-tweaked-create-6',
+                modA: 'CC: Tweaked (ComputerCraft)',
+                modB: 'CC:C Bridge (Outdated Builds)',
+                severity: 'major',
+                category: 'Create & Physics',
+                loader: 'NeoForge',
+                versions: 'MC 1.21.1 | Create 6.0+',
+                errorTag: 'Peripheral Method Signature Mismatch',
+                summary: 'While base Create has built-in CC: Tweaked peripheral support, older versions of the third-party CC:C Bridge addon crash when querying Rotation Speed Controllers or Display Links on Create 6.0+.',
+                fix: 'Use Create’s native CC: Tweaked integration directly (Train Stations, Speed Controllers, Display Links work out of the box) or update CC:C Bridge to its 1.21.1 release.',
+                keywords: ['cc tweaked', 'computercraft', 'lua', 'ccc bridge', 'create', 'peripheral', 'program']
+            }
+        ];
+
+        // Application State
+        let conflicts = [...initialConflicts];
+        let activeCategory = 'all';
+        let activeSeverity = 'all';
+        let activeLoader = 'all';
+        let searchQuery = '';
+
+        // DOM References
+        const conflictsGrid = document.getElementById('conflictsGrid');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const severityFilter = document.getElementById('severityFilter');
+        const loaderFilter = document.getElementById('loaderFilter');
+        const categoryPills = document.querySelectorAll('.filter-pill');
+        const showingCountText = document.getElementById('showingCountText');
+        const resetAllFiltersBtn = document.getElementById('resetAllFiltersBtn');
+        const emptyResetBtn = document.getElementById('emptyResetBtn');
+
+        // Stats Elements
+        const statTotal = document.getElementById('statTotal');
+        const statCritical = document.getElementById('statCritical');
+        const statWarning = document.getElementById('statWarning');
+        const statPatched = document.getElementById('statPatched');
+
+        // Modals & Forms
+        const analyzerModal = document.getElementById('analyzerModal');
+        const reportModal = document.getElementById('reportModal');
+        const openAnalyzerBtn = document.getElementById('openAnalyzerBtn');
+        const openReportBtn = document.getElementById('openReportBtn');
+        const closeModalBtns = document.querySelectorAll('.close-modal');
+        const newConflictForm = document.getElementById('newConflictForm');
+
+        // Analyzer Elements
+        const modListInput = document.getElementById('modListInput');
+        const loadSampleModsBtn = document.getElementById('loadSampleModsBtn');
+        const runScanBtn = document.getElementById('runScanBtn');
+        const scanResultsContainer = document.getElementById('scanResultsContainer');
+        const scanResultsHeader = document.getElementById('scanResultsHeader');
+        const scanResultsList = document.getElementById('scanResultsList');
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Toast Helper (Replaces alert())
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Copy Fix Helper (Uses document.execCommand('copy') for iframe compatibility)
+        function copyFixToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Fix & workaround copied to clipboard!');
+            } catch (err) {
+                showToast('Unable to copy text.');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // Severity Badge Config
+        function getSeverityBadge(severity) {
+            switch (severity) {
+                case 'critical':
+                    return {
+                        label: 'Critical Crash',
+                        classes: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+                        icon: 'flame'
+                    };
+                case 'major':
+                    return {
+                        label: 'Major Clash',
+                        classes: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20',
+                        icon: 'alert-octagon'
+                    };
+                case 'minor':
+                    return {
+                        label: 'Visual / Minor',
+                        classes: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+                        icon: 'alert-triangle'
+                    };
+                case 'resolved':
+                default:
+                    return {
+                        label: 'Patched / Workaround',
+                        classes: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                        icon: 'check-circle-2'
+                    };
+            }
+        }
+
+        // Update Dashboard Counters
+        function updateStats() {
+            statTotal.textContent = conflicts.length;
+            statCritical.textContent = conflicts.filter(c => c.severity === 'critical').length;
+            statWarning.textContent = conflicts.filter(c => c.severity === 'major' || c.severity === 'minor').length;
+            statPatched.textContent = conflicts.filter(c => c.severity === 'resolved').length;
+        }
+
+        // Filter & Render Cards
+        function renderConflicts() {
+            const query = searchQuery.trim().toLowerCase();
+
+            const filtered = conflicts.filter(item => {
+                const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
+                const matchesSeverity = activeSeverity === 'all' || item.severity === activeSeverity;
+                const matchesLoader = activeLoader === 'all' || item.loader === activeLoader;
+
+                const searchableText = [
+                    item.modA,
+                    item.modB,
+                    item.category,
+                    item.loader,
+                    item.versions,
+                    item.errorTag,
+                    item.summary,
+                    item.fix,
+                    ...(item.keywords || [])
+                ].join(' ').toLowerCase();
+
+                const matchesSearch = !query || searchableText.includes(query);
+
+                return matchesCategory && matchesSeverity && matchesLoader && matchesSearch;
+            });
+
+            // Update count text and reset button visibility
+            const isFiltered = activeCategory !== 'all' || activeSeverity !== 'all' || activeLoader !== 'all' || query !== '';
+            showingCountText.textContent = `Showing ${filtered.length} of ${conflicts.length} documented mod interactions`;
+            resetAllFiltersBtn.classList.toggle('hidden', !isFiltered);
+            clearSearchBtn.classList.toggle('hidden', query === '');
+
+            // Render Grid or Empty State
+            if (filtered.length === 0) {
+                conflictsGrid.innerHTML = '';
+                conflictsGrid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                conflictsGrid.classList.remove('hidden');
+
+                conflictsGrid.innerHTML = filtered.map(item => {
+                    const badge = getSeverityBadge(item.severity);
+                    const safeCopyText = `${item.modA} vs ${item.modB} (${item.versions}): ${item.fix}`.replace(/"/g, '&quot;');
+
+                    return `
+                        <article class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between gap-5">
+                            <div class="space-y-4">
+                                <!-- Top Meta Row -->
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border ${badge.classes}">
+                                        <i data-lucide="${badge.icon}" class="w-3.5 h-3.5"></i>
+                                        ${badge.label}
+                                    </span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                            ${item.category}
+                                        </span>
+                                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                                            ${item.loader}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Mod VS Header -->
+                                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200/70 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">${item.modA}</div>
+                                    <div class="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-500 font-mono text-[11px] font-bold self-start sm:self-center">
+                                        VS
+                                    </div>
+                                    <div class="font-bold text-sm sm:text-base text-slate-900 dark:text-white sm:text-right">${item.modB}</div>
+                                </div>
+
+                                <!-- Version & Error Pill -->
+                                <div class="flex flex-wrap items-center gap-2 text-xs">
+                                    <span class="inline-flex items-center gap-1.5 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+                                        <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                                        ${item.versions}
+                                    </span>
+                                    <span class="text-slate-300 dark:text-slate-700">•</span>
+                                    <span class="font-mono text-[11px] text-rose-600 dark:text-rose-400 font-medium">
+                                        ${item.errorTag}
+                                    </span>
+                                </div>
+
+                                <!-- Conflict Summary -->
+                                <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    ${item.summary}
+                                </p>
+                            </div>
+
+                            <!-- Verified Solution Box -->
+                            <div class="rounded-xl p-4 bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                                        <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                                        Verified Fix / Workaround
+                                    </span>
+                                    <button
+                                        onclick="copyFixToClipboard('${safeCopyText.replace(/'/g, "\\'")}')"
+                                        class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15 transition-colors"
+                                        title="Copy fix to clipboard"
+                                    >
+                                        <i data-lucide="copy" class="w-3 h-3"></i>
+                                        Copy Fix
+                                    </button>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                                    ${item.fix}
+                                </p>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+            }
+
+            // Re-initialize Lucide Icons for newly rendered DOM nodes
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // 2. EVENT LISTENERS & FILTERS
+        // ==========================================
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderConflicts();
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            renderConflicts();
+            searchInput.focus();
+        });
+
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                categoryPills.forEach(p => {
+                    p.classList.remove('active', 'bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950', 'shadow-sm');
+                    p.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+                });
+
+                pill.classList.add('active', 'bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950', 'shadow-sm');
+                pill.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+
+                activeCategory = pill.dataset.category;
+                renderConflicts();
+            });
+        });
+
+        severityFilter.addEventListener('change', (e) => {
+            activeSeverity = e.target.value;
+            renderConflicts();
+        });
+
+        loaderFilter.addEventListener('change', (e) => {
+            activeLoader = e.target.value;
+            renderConflicts();
+        });
+
+        function resetAllFilters() {
+            searchInput.value = '';
+            searchQuery = '';
+            activeCategory = 'all';
+            activeSeverity = 'all';
+            activeLoader = 'all';
+            severityFilter.value = 'all';
+            loaderFilter.value = 'all';
+
+            categoryPills.forEach(p => {
+                if (p.dataset.category === 'all') {
+                    p.classList.add('active', 'bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950', 'shadow-sm');
+                    p.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+                } else {
+                    p.classList.remove('active', 'bg-slate-900', 'text-white', 'dark:bg-white', 'dark:text-slate-950', 'shadow-sm');
+                    p.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-300', 'border', 'border-slate-200', 'dark:border-slate-800');
+                }
+            });
+
+            renderConflicts();
+        }
+
+        resetAllFiltersBtn.addEventListener('click', resetAllFilters);
+        emptyResetBtn.addEventListener('click', resetAllFilters);
+
+        // ==========================================
+        // 3. MODALS & MOD LIST ANALYZER LOGIC
+        // ==========================================
+        function openModal(modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAllModals() {
+            [analyzerModal, reportModal].forEach(modal => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+        }
+
+        openAnalyzerBtn.addEventListener('click', () => openModal(analyzerModal));
+        openReportBtn.addEventListener('click', () => openModal(reportModal));
+        closeModalBtns.forEach(btn => btn.addEventListener('click', closeAllModals));
+
+        [analyzerModal, reportModal].forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeAllModals();
+            });
+        });
+
+        // Sample Mod List Button
+        loadSampleModsBtn.addEventListener('click', () => {
+            modListInput.value = [
+                'create-1.21.1-6.0.4.jar',
+                'create_aeronautics-1.3.0.jar',
+                'sable-1.21.1-neoforge.jar',
+                'jei-1.21.1-neoforge-19.21.0.247.jar',
+                'sodium-neoforge-0.6.13+mc1.21.1.jar',
+                'iris-neoforge-1.8.8+mc1.21.1.jar'
+            ].join('\n');
+        });
+
+        // Run Mod List Scan
+        runScanBtn.addEventListener('click', () => {
+            const rawText = modListInput.value.toLowerCase();
+            if (!rawText.trim()) {
+                showToast('Please paste at least two mods to scan.');
+                return;
+            }
+
+            // Match conflicts where at least two distinct mod tokens appear in the user's list
+            const matchedConflicts = conflicts.filter(conflict => {
+                const modATokens = conflict.modA.toLowerCase().split(/[\s+()/-]+/).filter(w => w.length > 3 && w !== 'create');
+                const modBTokens = conflict.modB.toLowerCase().split(/[\s+()/-]+/).filter(w => w.length > 2 && w !== 'create');
+
+                const hasCreate = rawText.includes('create');
+                const matchA = modATokens.some(token => rawText.includes(token)) || (conflict.modA.toLowerCase().includes('create') && hasCreate && modATokens.length === 0);
+                const matchB = modBTokens.some(token => rawText.includes(token));
+
+                return matchA && matchB;
+            });
+
+            scanResultsContainer.classList.remove('hidden');
+
+            if (matchedConflicts.length === 0) {
+                scanResultsHeader.textContent = '0 Known Conflicts Detected';
+                scanResultsList.innerHTML = `
+                    <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-3">
+                        <i data-lucide="shield-check" class="w-5 h-5 shrink-0"></i>
+                        <span>No known direct conflicts matched your pasted mod list! Make sure all mod versions target the same Minecraft & loader version.</span>
+                    </div>
+                `;
+            } else {
+                scanResultsHeader.textContent = `${matchedConflicts.length} Potential Interaction${matchedConflicts.length > 1 ? 's' : ''} Found`;
+                scanResultsList.innerHTML = matchedConflicts.map(c => {
+                    const badge = getSeverityBadge(c.severity);
+                    return `
+                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-bold text-xs sm:text-sm">${c.modA} ↔ ${c.modB}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold border ${badge.classes}">${badge.label}</span>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400">${c.summary}</p>
+                            <div class="text-xs text-emerald-600 dark:text-emerald-400 font-medium pt-1">
+                                <strong>Fix:</strong> ${c.fix}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            lucide.createIcons();
+        });
+
+        // Submit New Conflict Form
+        newConflictForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const modA = document.getElementById('formModA').value.trim();
+            const modB = document.getElementById('formModB').value.trim();
+            const severity = document.getElementById('formSeverity').value;
+            const category = document.getElementById('formCategory').value;
+            const loader = document.getElementById('formLoader').value;
+            const versions = document.getElementById('formVersions').value.trim();
+            const summary = document.getElementById('formSummary').value.trim();
+            const fix = document.getElementById('formFix').value.trim();
+
+            const newEntry = {
+                id: 'custom-' + Date.now(),
+                modA,
+                modB,
+                severity,
+                category,
+                loader,
+                versions,
+                errorTag: 'Community Logged Interaction',
+                summary,
+                fix,
+                keywords: [modA.toLowerCase(), modB.toLowerCase(), category.toLowerCase()]
+            };
+
+            conflicts.unshift(newEntry);
+            updateStats();
+            renderConflicts();
+            newConflictForm.reset();
+            closeAllModals();
+            showToast(`Added ${modA} vs ${modB} to the tracker!`);
+        });
+
+        // Initial Render
+        updateStats();
+        renderConflicts();
+    </script>
+</body>
+</html>
